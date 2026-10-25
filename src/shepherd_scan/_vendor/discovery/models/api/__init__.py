@@ -1,0 +1,52 @@
+# Modified from Apache-2.0 licensed code; see THIRD_PARTY_NOTICES.txt.
+"""Versioned analysis API contracts."""
+
+from shepherd_scan._vendor.discovery.models.api.common import ScanUserInfo
+from shepherd_scan._vendor.discovery.models.api.v20260710 import (
+    MCP_SERVER_RISK_DISPLAY_NAMES,
+    RISK_DISPLAY_NAMES,
+    SKILL_RISK_DISPLAY_NAMES,
+    MaliciousURLSkillRiskScore,
+    McpEntitySummary,
+    McpServerRequest,
+    McpServerRiskIndexes,
+    McpServerRiskResponse,
+    Occurrence,
+    Region,
+    RiskScore,
+    ScanPathRequest,
+    ScanPathResponse,
+    ScanRequest,
+    ScanResponse,
+    SkillFileSummary,
+    SkillRequest,
+    SkillRiskIndexes,
+    SkillRiskResponse,
+    SkillRiskScore,
+    UnverifiableURLSkillRiskScore,
+)
+
+__all__ = [
+    "MCP_SERVER_RISK_DISPLAY_NAMES",
+    "RISK_DISPLAY_NAMES",
+    "SKILL_RISK_DISPLAY_NAMES",
+    "MaliciousURLSkillRiskScore",
+    "McpEntitySummary",
+    "McpServerRequest",
+    "McpServerRiskIndexes",
+    "McpServerRiskResponse",
+    "Occurrence",
+    "Region",
+    "RiskScore",
+    "ScanPathRequest",
+    "ScanPathResponse",
+    "ScanRequest",
+    "ScanResponse",
+    "ScanUserInfo",
+    "SkillFileSummary",
+    "SkillRequest",
+    "SkillRiskIndexes",
+    "SkillRiskResponse",
+    "SkillRiskScore",
+    "UnverifiableURLSkillRiskScore",
+]

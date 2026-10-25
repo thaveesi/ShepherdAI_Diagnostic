@@ -1,0 +1,561 @@
+# Modified from Apache-2.0 licensed code; see THIRD_PARTY_NOTICES.txt.
+"""Test scanning/parsing and connecting to MCP servers."""
+
+from unittest.mock import AsyncMock, Mock, patch
+
+import pytest
+from mcp.types import (
+    Implementation,
+    InitializeResult,
+    Prompt,
+    PromptsCapability,
+    Resource,
+    ResourcesCapability,
+    ServerCapabilities,
+    Tool,
+    ToolsCapability,
+)
+from pytest_lazy_fixtures import lf
+
+from shepherd_scan._vendor.discovery.mcp_client import check_server, scan_mcp_config_file
+from shepherd_scan._vendor.discovery.models import (
+    ConfigWithoutMCP,
+    PluginMCPConfigFile,
+    RemoteServer,
+    StdioServer,
+    UnknownMCPConfig,
+)
+
+
+@pytest.mark.parametrize(
+    "sample_config_file",
+    [
+        lf("claudestyle_config_file"),
+        lf("vscode_mcp_config_file"),
+        lf("vscode_config_file"),
+        lf("vscode_settings_file_with_empty_mcp"),
+        lf("vscode_settings_file_without_mcp"),
+    ],
+)
+@pytest.mark.asyncio
+async def test_scan_mcp_config(sample_config_file):
+    await scan_mcp_config_file(sample_config_file)
+
+
+@pytest.mark.asyncio
+@patch("shepherd_scan._vendor.discovery.mcp_client.stdio_client")
+async def test_check_server_mocked(mock_stdio_client):
+    # Create mock objects
+    mock_session = Mock()
+    mock_read = AsyncMock()
+    mock_write = AsyncMock()
+
+    # Mock initialize response
+    mock_metadata = InitializeResult(
+        protocolVersion="1.0",
+        capabilities=ServerCapabilities(
+            prompts=PromptsCapability(),
+            resources=ResourcesCapability(),
+            tools=ToolsCapability(),
+        ),
+        serverInfo=Implementation(
+            name="TestServer",
+            version="1.0",
+        ),
+    )
+    mock_session.initialize = AsyncMock(return_value=mock_metadata)
+
+    # Mock list responses
+    mock_prompts = Mock()
+    mock_prompts.prompts = [
+        Prompt(name="prompt1"),
+        Prompt(name="prompt"),
+    ]
+    mock_session.list_prompts = AsyncMock(return_value=mock_prompts)
+
+    mock_resources = Mock()
+    mock_resources.resources = [Resource(name="resource1", uri="tel:+1234567890")]
+    mock_session.list_resources = AsyncMock(return_value=mock_resources)
+
+    mock_tools = Mock()
+    mock_tools.tools = [
+        Tool(name="tool1", inputSchema={}),
+        Tool(name="tool2", inputSchema={}),
+        Tool(name="tool3", inputSchema={}),
+    ]
+    mock_session.list_tools = AsyncMock(return_value=mock_tools)
+
+    # Set up the mock stdio client to return our mocked read/write pair
+    mock_client = AsyncMock()
+    mock_client.__aenter__.return_value = (mock_read, mock_write)
+    mock_stdio_client.return_value = mock_client
+
+    # Mock ClientSession with proper async context manager protocol
+    class MockClientSession:
+        def __init__(self, read, write):
+            self.read = read
+            self.write = write
+
+        async def __aenter__(self):
+            return mock_session
+
+        async def __aexit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+    # Test function with mocks
+    with patch("shepherd_scan._vendor.discovery.mcp_client.ClientSession", MockClientSession):
+        server = StdioServer(command="mcp", args=["run", "some_file.py"])
+        signature, _ = await check_server(server, 2, True)
+
+    # Verify the results
+    assert len(signature.prompts) == 2
+    assert len(signature.resources) == 1
+    assert len(signature.tools) == 3
+
+
+@pytest.mark.asyncio
+async def test_math_server():
+    path = "tests/discovery/mcp_servers/configs_files/math_config.json"
+    servers = (await scan_mcp_config_file(path)).get_servers()
+    for name, server in servers.items():
+        signature, _ = await check_server(server, 5, False)
+        if name == "Math":
+            assert len(signature.prompts) == 1
+            assert len(signature.resources) == 0
+            assert {t.name for t in signature.tools} == {
+                "add",
+                "subtract",
+                "multiply",
+                "store_value",  # This is the compromised tool
+                "divide",
+            }
+
+
+@pytest.mark.asyncio
+async def test_all_server():
+    path = "tests/discovery/mcp_servers/configs_files/all_config.json"
+    servers = (await scan_mcp_config_file(path)).get_servers()
+    for name, server in servers.items():
+        signature, _ = await check_server(server, 5, False)
+        if name == "Math":
+            assert len(signature.prompts) == 1
+            assert len(signature.resources) == 0
+            assert {t.name for t in signature.tools} == {
+                "add",
+                "subtract",
+                "multiply",
+                "store_value",  # This is the compromised tool
+                "divide",
+            }
+        if name == "Weather":
+            assert {t.name for t in signature.tools} == {"weather"}
+            assert {p.name for p in signature.prompts} == {"good_morning"}
+            assert {r.name for r in signature.resources} == {"weathers"}
+            assert {rt.name for rt in signature.resource_templates} == {"weather_description"}
+
+
+@pytest.mark.asyncio
+async def test_weather_server():
+    path = "tests/discovery/mcp_servers/configs_files/weather_config.json"
+    servers = (await scan_mcp_config_file(path)).get_servers()
+    for name, server in servers.items():
+        signature, _ = await check_server(server, 5, False)
+        if name == "Weather":
+            assert {t.name for t in signature.tools} == {"weather"}
+            assert {p.name for p in signature.prompts} == {"good_morning"}
+            assert {r.name for r in signature.resources} == {"weathers"}
+            assert {rt.name for rt in signature.resource_templates} == {"weather_description"}
+
+
+@pytest.mark.asyncio
+async def test_vscode_settings_file_without_mcp():
+    path = "tests/discovery/mcp_servers/configs_files/vs_code_settings_file_without_mcp.json"
+    mcp_config = await scan_mcp_config_file(path)
+    assert isinstance(mcp_config, ConfigWithoutMCP)
+    servers = mcp_config.get_servers()
+    assert len(servers) == 0
+
+
+@pytest.mark.asyncio
+async def test_vscode_settings_file_with_empty_mcp():
+    path = "tests/discovery/mcp_servers/configs_files/vs_code_settings_file_with_empty_mcp.json"
+    mcp_config = await scan_mcp_config_file(path)
+    assert isinstance(mcp_config, UnknownMCPConfig)
+    servers = mcp_config.get_servers()
+    assert len(servers) == 0
+
+
+class TestOpenCodeExplicitPath:
+    """Regression: an opencode ``opencode.json{,c}`` passed as an explicit path
+    must parse via ``scan_mcp_config_file`` instead of falling through to
+    ``UnknownMCPConfig`` (which greedily matches any ``{"mcp": {...}}`` and
+    yields zero servers -> the X004 "no mcp servers or skills found" report)."""
+
+    @pytest.mark.asyncio
+    async def test_local_server_parsed_not_unknown(self, tmp_path):
+        from shepherd_scan._vendor.discovery.models import OpenCodeConfigFile
+
+        config = tmp_path / "opencode.jsonc"
+        # Mirrors the real user report: jsonc with $schema, array command,
+        # trailing commas, and type "local".
+        config.write_text(
+            "{\n"
+            '  "$schema": "https://opencode.ai/config.json",\n'
+            '  "mcp": {\n'
+            '    "panda-css": {\n'
+            '      "command": ["pnpx", "-y", "@pandacss/mcp", "--config", "./panda.config.ts"],\n'
+            '      "type": "local",\n'
+            "    },\n"
+            "  },\n"
+            "}"
+        )
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, OpenCodeConfigFile)
+        servers = mcp_config.get_servers()
+        assert "panda-css" in servers
+        assert isinstance(servers["panda-css"], StdioServer)
+        assert servers["panda-css"].command == "pnpx"
+        assert servers["panda-css"].args == ["-y", "@pandacss/mcp", "--config", "./panda.config.ts"]
+
+    @pytest.mark.asyncio
+    async def test_remote_server_parsed_not_unknown(self, tmp_path):
+        from shepherd_scan._vendor.discovery.models import OpenCodeConfigFile
+
+        config = tmp_path / "opencode.json"
+        config.write_text(
+            '{"mcp": {"jira": {"type": "remote", "url": "https://jira.example.com/mcp"}}}'
+        )
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, OpenCodeConfigFile)
+        servers = mcp_config.get_servers()
+        assert "jira" in servers
+        assert isinstance(servers["jira"], RemoteServer)
+        assert servers["jira"].url == "https://jira.example.com/mcp"
+
+    @pytest.mark.asyncio
+    async def test_disabled_entry_dropped(self, tmp_path):
+        config = tmp_path / "opencode.json"
+        config.write_text(
+            '{"mcp": {"jira": {"type": "remote", "url": "https://jira.example.com/mcp", "enabled": false}}}'
+        )
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert "jira" not in mcp_config.get_servers()
+
+    @pytest.mark.asyncio
+    async def test_mixed_entries_keep_enabled_drop_disabled(self, tmp_path):
+        """Ordering guard: with local + remote + a disabled entry side by side,
+        both enabled servers survive and only the disabled one is dropped — i.e.
+        OpenCodeConfigFile wins over UnknownMCPConfig without dropping siblings."""
+        config = tmp_path / "opencode.json"
+        config.write_text(
+            "{"
+            '  "mcp": {'
+            '    "local-srv": {"type": "local", "command": ["echo", "hi"]},'
+            '    "remote-srv": {"type": "remote", "url": "https://example.com/mcp"},'
+            '    "off-srv": {"type": "local", "command": ["echo"], "enabled": false}'
+            "  }"
+            "}"
+        )
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        servers = mcp_config.get_servers()
+        assert set(servers) == {"local-srv", "remote-srv"}
+        assert isinstance(servers["local-srv"], StdioServer)
+        assert isinstance(servers["remote-srv"], RemoteServer)
+
+    @pytest.mark.asyncio
+    async def test_opencode_config_not_unknown_mcp_config(self, tmp_path):
+        """Explicit ordering assertion against the X004 failure mode: an opencode
+        config with a top-level ``mcp`` dict must NOT resolve to UnknownMCPConfig
+        (which would emit 'no mcp servers or skills found')."""
+        config = tmp_path / "opencode.jsonc"
+        config.write_text('{"mcp": {"srv": {"type": "local", "command": ["echo"]}}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert not isinstance(mcp_config, UnknownMCPConfig)
+        assert "srv" in mcp_config.get_servers()
+
+    @pytest.mark.asyncio
+    async def test_non_opencode_file_with_mcp_key_not_stolen(self, tmp_path):
+        """OpenCodeConfigFile must NOT steal a non-opencode file that merely has a
+        dict ``mcp`` key (e.g. a VSCode settings.json with ``"mcp": {}``); it must
+        still resolve to UnknownMCPConfig so the format is reported as unknown."""
+        from shepherd_scan._vendor.discovery.models import OpenCodeConfigFile
+
+        config = tmp_path / "settings.json"  # NOT opencode.json{,c}, no opencode $schema
+        config.write_text('{"chat.mcp.gallery.enabled": true, "mcp": {}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, UnknownMCPConfig)
+        assert not isinstance(mcp_config, OpenCodeConfigFile)
+
+    @pytest.mark.asyncio
+    async def test_opencode_recognized_by_schema_when_renamed(self, tmp_path):
+        """A file not named opencode.json{,c} but declaring the opencode ``$schema``
+        is still parsed as opencode (schema-based gating)."""
+        from shepherd_scan._vendor.discovery.models import OpenCodeConfigFile
+
+        config = tmp_path / "custom-config.json"
+        config.write_text(
+            '{"$schema": "https://opencode.ai/config.json", "mcp": {"srv": {"type": "local", "command": ["echo"]}}}'
+        )
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, OpenCodeConfigFile)
+        assert "srv" in mcp_config.get_servers()
+
+
+class TestServerUrlAliasParsing:
+    @pytest.mark.asyncio
+    async def test_server_url_field_parsed_as_remote_server(self, tmp_path):
+        """A server with 'serverUrl' should parse as a RemoteServer, not be silently dropped."""
+        from shepherd_scan._vendor.discovery.models import ClaudeConfigFile, RemoteServer
+
+        config = tmp_path / "mcp.json"
+        config.write_text('{"mcpServers": {"figma": {"serverUrl": "https://mcp.figma.com/mcp"}}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, ClaudeConfigFile)
+        servers = mcp_config.get_servers()
+        assert "figma" in servers
+        assert isinstance(servers["figma"], RemoteServer)
+        assert servers["figma"].url == "https://mcp.figma.com/mcp"
+
+    @pytest.mark.asyncio
+    async def test_server_url_does_not_drop_other_servers(self, tmp_path):
+        """
+        Regression: when a 'serverUrl' server is present alongside normal servers,
+        all servers must be parsed — none should be silently dropped.
+        """
+        config = tmp_path / "mcp.json"
+        config.write_text("""{
+            "mcpServers": {
+                "figma": {"serverUrl": "https://mcp.figma.com/mcp"},
+                "local": {"command": "npx", "args": ["-y", "some-mcp-server"]}
+            }
+        }""")
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        servers = mcp_config.get_servers()
+        assert "figma" in servers, "figma server was silently dropped"
+        assert "local" in servers, "local server was silently dropped"
+        assert len(servers) == 2
+
+    @pytest.mark.asyncio
+    async def test_server_url_not_silently_dropped_as_config_without_mcp(self, tmp_path):
+        """
+        Regression: config with 'serverUrl' must NOT resolve to ConfigWithoutMCP (zero servers).
+        """
+        from shepherd_scan._vendor.discovery.models import ConfigWithoutMCP
+
+        config = tmp_path / "mcp.json"
+        config.write_text('{"mcpServers": {"figma": {"serverUrl": "https://mcp.figma.com/mcp"}}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert not isinstance(mcp_config, ConfigWithoutMCP), (
+            "Config with serverUrl was silently treated as ConfigWithoutMCP"
+        )
+
+    @pytest.mark.asyncio
+    async def test_url_wins_over_server_url_when_both_present(self, tmp_path):
+        """
+        When a server entry has both 'url' and 'serverUrl', 'url' should win because it is
+        listed first in AliasChoices — Pydantic v2 picks the first alias found in the input.
+        """
+        from shepherd_scan._vendor.discovery.models import RemoteServer
+
+        config = tmp_path / "mcp.json"
+        config.write_text("""{
+            "mcpServers": {
+                "ambiguous": {
+                    "url": "https://primary.example.com/mcp",
+                    "serverUrl": "https://secondary.example.com/mcp"
+                }
+            }
+        }""")
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        servers = mcp_config.get_servers()
+        assert "ambiguous" in servers
+        assert isinstance(servers["ambiguous"], RemoteServer)
+        assert servers["ambiguous"].url == "https://primary.example.com/mcp"
+
+
+class TestHttpUrlAliasParsing:
+    """Gemini CLI / Antigravity declare remote MCP servers with an ``httpUrl``
+    key (Streamable HTTP). It must parse as a RemoteServer, not be dropped."""
+
+    @pytest.mark.asyncio
+    async def test_http_url_field_parsed_as_remote_server(self, tmp_path):
+        from shepherd_scan._vendor.discovery.models import ClaudeConfigFile, RemoteServer
+
+        config = tmp_path / "settings.json"
+        config.write_text(
+            '{"mcpServers": {"gemini": {"httpUrl": "https://mcp.gemini.example/mcp"}}}'
+        )
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, ClaudeConfigFile)
+        servers = mcp_config.get_servers()
+        assert "gemini" in servers
+        assert isinstance(servers["gemini"], RemoteServer)
+        assert servers["gemini"].url == "https://mcp.gemini.example/mcp"
+
+    @pytest.mark.asyncio
+    async def test_http_url_does_not_drop_other_servers(self, tmp_path):
+        """A single ``httpUrl`` server must not fail the whole file and take its
+        stdio siblings down with it (the original Antigravity regression)."""
+        config = tmp_path / "settings.json"
+        config.write_text("""{
+            "mcpServers": {
+                "gemini": {"httpUrl": "https://mcp.gemini.example/mcp"},
+                "local": {"command": "npx", "args": ["-y", "some-mcp-server"]}
+            }
+        }""")
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        servers = mcp_config.get_servers()
+        assert "gemini" in servers, "httpUrl server was silently dropped"
+        assert "local" in servers, "local server was silently dropped"
+        assert len(servers) == 2
+
+    @pytest.mark.asyncio
+    async def test_http_url_not_silently_dropped_as_config_without_mcp(self, tmp_path):
+        from shepherd_scan._vendor.discovery.models import ConfigWithoutMCP
+
+        config = tmp_path / "settings.json"
+        config.write_text(
+            '{"mcpServers": {"gemini": {"httpUrl": "https://mcp.gemini.example/mcp"}}}'
+        )
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert not isinstance(mcp_config, ConfigWithoutMCP), (
+            "Config with httpUrl was silently treated as ConfigWithoutMCP"
+        )
+
+
+class TestCopilotCLILocalTransport:
+    """GitHub Copilot CLI writes ``type: "local"`` for stdio servers in
+    ``~/.copilot/mcp-config.json``; it must fold onto ``stdio`` rather than
+    sinking the file into ``CouldNotParseMCPConfig``.
+    https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers
+    """
+
+    @pytest.mark.asyncio
+    async def test_local_type_parses_as_stdio(self, tmp_path):
+        config = tmp_path / "mcp-config.json"
+        # Copied verbatim from the Playwright MCP docs, including the extra
+        # ``tools`` key Copilot CLI accepts.
+        config.write_text("""{
+            "mcpServers": {
+                "playwright": {
+                    "type": "local",
+                    "command": "npx",
+                    "tools": ["*"],
+                    "args": ["@playwright/mcp@latest"]
+                }
+            }
+        }""")
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        servers = mcp_config.get_servers()
+        assert isinstance(servers["playwright"], StdioServer)
+        assert servers["playwright"].type == "stdio"
+        assert servers["playwright"].command == "npx"
+        assert servers["playwright"].args == ["@playwright/mcp@latest"]
+
+    @pytest.mark.asyncio
+    async def test_local_type_does_not_sink_valid_siblings(self, tmp_path):
+        config = tmp_path / "mcp-config.json"
+        config.write_text("""{
+            "mcpServers": {
+                "local-srv": {"type": "local", "command": "npx", "args": ["pkg"]},
+                "remote-srv": {"type": "http", "url": "https://example.com/mcp"}
+            }
+        }""")
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        servers = mcp_config.get_servers()
+        assert len(servers) == 2
+        assert isinstance(servers["local-srv"], StdioServer)
+        assert isinstance(servers["remote-srv"], RemoteServer)
+
+
+class TestPluginMCPConfigFile:
+    @pytest.mark.asyncio
+    async def test_flat_stdio_server_config(self, tmp_path):
+        config = tmp_path / ".mcp.json"
+        config.write_text('{"my-server": {"command": "npx", "args": ["-y", "some-pkg"]}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, PluginMCPConfigFile)
+        servers = mcp_config.get_servers()
+        assert "my-server" in servers
+        assert isinstance(servers["my-server"], StdioServer)
+        assert servers["my-server"].command == "npx"
+
+    @pytest.mark.asyncio
+    async def test_flat_remote_server_config(self, tmp_path):
+        config = tmp_path / ".mcp.json"
+        config.write_text('{"remote": {"url": "https://example.com/mcp"}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, PluginMCPConfigFile)
+        servers = mcp_config.get_servers()
+        assert "remote" in servers
+        assert isinstance(servers["remote"], RemoteServer)
+        assert servers["remote"].url == "https://example.com/mcp"
+
+    @pytest.mark.asyncio
+    async def test_flat_multiple_servers(self, tmp_path):
+        config = tmp_path / ".mcp.json"
+        config.write_text("""{
+            "stdio-srv": {"command": "node", "args": ["server.js"]},
+            "remote-srv": {"url": "https://example.com/mcp"}
+        }""")
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, PluginMCPConfigFile)
+        servers = mcp_config.get_servers()
+        assert len(servers) == 2
+
+    @pytest.mark.asyncio
+    async def test_flat_server_url_alias(self, tmp_path):
+        config = tmp_path / ".mcp.json"
+        config.write_text('{"srv": {"serverUrl": "https://example.com/mcp"}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, PluginMCPConfigFile)
+        servers = mcp_config.get_servers()
+        assert isinstance(servers["srv"], RemoteServer)
+
+    @pytest.mark.asyncio
+    async def test_flat_http_url_alias(self, tmp_path):
+        # The flat-format gate must recognise ``httpUrl`` as a server-config
+        # discriminator (alongside ``command``/``url``/``serverUrl``).
+        config = tmp_path / ".mcp.json"
+        config.write_text('{"srv": {"httpUrl": "https://example.com/mcp"}}')
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert isinstance(mcp_config, PluginMCPConfigFile)
+        servers = mcp_config.get_servers()
+        assert isinstance(servers["srv"], RemoteServer)
+        assert servers["srv"].url == "https://example.com/mcp"
+
+    @pytest.mark.asyncio
+    async def test_empty_dict_not_plugin_config(self, tmp_path):
+        config = tmp_path / ".mcp.json"
+        config.write_text("{}")
+
+        mcp_config = await scan_mcp_config_file(str(config))
+        assert not isinstance(mcp_config, PluginMCPConfigFile)
+
+    @pytest.mark.asyncio
+    async def test_set_servers(self):
+        config = PluginMCPConfigFile.model_validate({"my-server": {"command": "npx", "args": []}})
+        new_servers = {"replaced": StdioServer(command="node", args=["index.js"])}
+        config.set_servers(new_servers)
+        assert config.get_servers() == new_servers

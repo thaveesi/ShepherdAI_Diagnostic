@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+dist/
+.pytest_cache/
+.ruff_cache/
+shepherd-report*.html
+.DS_Store

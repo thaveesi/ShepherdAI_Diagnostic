@@ -1,0 +1,20 @@
+Shepherd Scan Licence
+
+Copyright 2026 Shepherd Security Inc. All rights reserved.
+
+1. You may read the source code of Shepherd Scan.
+
+2. You may run Shepherd Scan, unmodified, including a copy you build yourself from this
+   source.
+
+3. You may not copy, change, publish, distribute, sublicense or sell Shepherd Scan or any
+   part of it, or use its code in other software, except as needed to read and run it as
+   allowed above.
+
+4. Files that come from other projects are under their own licences, not this one.
+   THIRD_PARTY_NOTICES.txt lists them; the licence texts are in LICENSES/ or beside the
+   files they cover.
+
+5. Shepherd Scan is provided "as is", without warranty of any kind. To the extent the law
+   allows, Shepherd Security Inc. is not liable for any claim, damage or other liability
+   arising from Shepherd Scan or its use.

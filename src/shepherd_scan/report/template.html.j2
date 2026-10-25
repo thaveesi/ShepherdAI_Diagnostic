@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'">
+<title>Shepherd AI agent check</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f4f6; --panel: #ffffff; --panel-2: #f9f9fb; --ink: #17171c; --ink-2: #3f3f46;
+    --muted: #6b6b76; --faint: #8e8e98; --line: #e7e7eb; --line-2: #f0f0f3;
+    --brand: #ff3b5c; --brand-ink: #d81e47; --brand-tint: #fff1f4;
+    --critical: #b42318; --critical-bg: #fef3f2; --high: #c4320a; --high-bg: #fff4ed;
+    --medium: #b54708; --medium-bg: #fffaeb; --low: #475467; --low-bg: #f2f4f7;
+    --chip-bg: #f2f2f5; --code-bg: #f3f3f6;
+    --shadow: 0 1px 2px rgba(16, 16, 24, 0.04), 0 1px 3px rgba(16, 16, 24, 0.03);
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #0e0e11; --panel: #17171b; --panel-2: #1c1c21; --ink: #ededf0; --ink-2: #cfcfd6;
+      --muted: #a1a1ab; --faint: #7d7d87; --line: #2a2a31; --line-2: #222228;
+      --brand: #ff5c78; --brand-ink: #ff7d93; --brand-tint: #36161e;
+      --critical: #fda29b; --critical-bg: #3b1614; --high: #f9a46b; --high-bg: #3a1f10;
+      --medium: #fec84b; --medium-bg: #36290b; --low: #c3c8d2; --low-bg: #262a33;
+      --chip-bg: #24242a; --code-bg: #222227;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 14.5px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+         -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  [id] { scroll-margin-top: 80px; }
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+  .sh-topbar { position: sticky; top: 0; z-index: 10; background: var(--panel);
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(12px); backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+  .sh-topbar-inner { max-width: 1088px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; }
+  .sh-logo { display: block; height: 26px; width: auto; }
+
+  main { max-width: 1088px; margin: 0 auto; padding: 36px 24px 72px; }
+  header { display: grid; gap: 6px; }
+  header h1 { font-size: 30px; line-height: 1.15; font-weight: 650; letter-spacing: -0.022em; margin: 0; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 80ch; }
+  .brand { color: var(--brand-ink); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 11.5px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 26px; }
+  .card { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+          padding: 16px 18px 15px; box-shadow: var(--shadow); }
+  .card .n { font-size: 28px; font-weight: 650; line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .card .l { color: var(--muted); font-size: 12.5px; line-height: 1.45; margin-top: 6px; }
+  .card.alert .n { color: var(--critical); }
+  .card.alert::after { content: ""; position: absolute; top: 18px; right: 18px; width: 7px; height: 7px; border-radius: 50%;
+          background: var(--critical); box-shadow: 0 0 0 4px var(--critical-bg); }
+
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px;
+            margin-top: 16px; box-shadow: var(--shadow); }
+  section h2 { font-size: 17px; line-height: 1.35; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  .lead { margin: 6px 0 16px; color: var(--muted); max-width: 82ch; }
+
+  .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 11px 14px; border-top: 1px solid var(--line-2); vertical-align: top; }
+  th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+       background: var(--panel-2); border-top: none; border-bottom: 1px solid var(--line); padding-block: 9px; }
+  tr:hover > td { background: var(--panel-2); }
+  table.reach td:first-child { white-space: nowrap; font-weight: 500; }
+  table.reach td.mono { width: 34%; }
+  code, .mono { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; overflow-wrap: anywhere; }
+  td.mono, td .mono, .meta .mono, .meta code { color: var(--ink-2); }
+
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 999px; font-size: 11.5px;
+          font-weight: 600; line-height: 1.5; background: var(--chip-bg); color: var(--ink-2); margin: 1px 4px 1px 0; white-space: nowrap; }
+  .chip.mono { font-weight: 500; }
+  .sev-critical { color: var(--critical); background: var(--critical-bg); }
+  .sev-high { color: var(--high); background: var(--high-bg); }
+  .sev-medium { color: var(--medium); background: var(--medium-bg); }
+  .sev-low { color: var(--low); background: var(--low-bg); }
+  .chip.sev-critical::before, .chip.sev-high::before, .chip.sev-medium::before, .chip.sev-low::before {
+          content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+  .pack { color: var(--brand-ink); }
+
+  .item { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); column-gap: 24px; align-items: start;
+          padding: 14px 18px; border-inline: 1px solid var(--line); border-top: 1px solid var(--line-2); }
+  .item:first-of-type { border-top: 1px solid var(--line); border-radius: 12px 12px 0 0; margin-top: 14px; }
+  .item:last-of-type { border-bottom: 1px solid var(--line); border-radius: 0 0 12px 12px; }
+  .item:first-of-type:last-of-type { border-radius: 12px; }
+  .item:hover { background: var(--panel-2); }
+  .item > h3 { grid-column: 1; grid-row: 1 / span 99; }
+  .item > :not(h3) { grid-column: 2; }
+  .item > :not(h3) + :not(h3) { margin-top: 4px; }
+  .item > details { margin-top: 6px; }
+  .item h3 { font-size: 14.5px; line-height: 1.45; font-weight: 600; margin: 0; overflow-wrap: anywhere; }
+  .item h3 .chip { margin-left: 6px; vertical-align: 1px; }
+  .meta { color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+  .flag { margin: 10px 0 0; padding: 10px 14px; background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 10px; }
+  .flag strong { font-weight: 600; }
+  .flag .evidence { display: block; margin-top: 4px; color: var(--muted); }
+
+  details summary { cursor: pointer; color: var(--brand-ink); margin-top: 8px; font-size: 13px; font-weight: 600;
+          width: fit-content; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details > summary::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 9px;
+          border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor;
+          transform: translateY(-2px) rotate(-45deg); transition: transform 0.15s ease; }
+  details[open] > summary::before { transform: translateY(-3px) rotate(45deg); }
+  details.block > summary, details.part > summary { color: inherit; margin: 0; display: flex; align-items: center; gap: 0;
+          font-size: inherit; font-weight: inherit; width: auto; }
+  details.block > summary::before, details.part > summary::before { color: var(--faint); margin-right: 12px; }
+  details.block > summary:hover h2, details.part > summary:hover h3 { color: var(--brand-ink); }
+  details.part { border-top: 1px solid var(--line-2); padding: 14px 0 6px; }
+  details.part > summary h3 { font-size: 15px; font-weight: 600; margin: 0; }
+  details.part > .lead { margin: 6px 0 12px; }
+  ul.tools { margin: 10px 0 2px; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 10px;
+          overflow: hidden; background: var(--panel); }
+  ul.tools > li { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); column-gap: 16px; margin: 0;
+          padding: 8px 14px; border-top: 1px solid var(--line-2); font-size: 13px; line-height: 1.55; color: var(--ink-2); }
+  ul.tools > li:first-child { border-top: none; }
+  ul.tools > li:nth-child(even) { background: var(--panel-2); }
+  ul.tools > li > code { font-size: 12px; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
+  .note { background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 10px; padding: 12px 14px;
+          margin: 12px 0 0; font-size: 13.5px; color: var(--ink-2); }
+  ul.plain { margin: 12px 0 0; padding: 0; list-style: none; border: 1px solid var(--line); border-radius: 12px;
+          overflow: hidden; background: var(--panel); }
+  ul.plain > li { margin: 0; padding: 10px 16px; border-top: 1px solid var(--line-2); }
+  ul.plain > li:first-child { border-top: none; }
+  ul.plain > li:nth-child(even) { background: var(--panel-2); }
+  li::marker { color: var(--faint); }
+  footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+
+  @media (max-width: 640px) {
+    main { padding: 24px 16px 56px; }
+    .sh-topbar-inner { padding: 12px 16px; }
+    section { padding: 18px 16px; }
+    header h1 { font-size: 26px; }
+    .item { grid-template-columns: minmax(0, 1fr); padding: 12px 14px; }
+    .item > h3 { grid-row: auto; }
+    .item > :not(h3) { grid-column: 1; }
+    .item > h3 + * { margin-top: 4px; }
+    ul.tools > li { grid-template-columns: minmax(0, 1fr); row-gap: 2px; }
+  }
+  @media (prefers-reduced-motion: reduce) { details > summary::before { transition: none; } }
+  @media print {
+    .sh-topbar { position: static; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+    section, .card { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+{% if logo %}<div class="sh-topbar"><div class="sh-topbar-inner"><img class="sh-logo" src="{{ logo }}" alt="Shepherd" width="112" height="26"></div></div>{% endif %}
+{% macro reach_table(part, rows) %}
+<div class="wrap"><table class="reach">
+  <tr>{% if part.key != 'logins' %}<th>App</th>{% endif %}<th>{{ part.what_heading }}</th><th>Where</th></tr>
+  {% for finding in rows %}
+  <tr>
+    {% if part.key != 'logins' %}<td>{{ finding.app }}</td>{% endif %}
+    <td>{{ finding.what }}{% if finding.basis == 'default' %} <span class="chip">app default</span>{% elif finding.basis == 'published' %} <span class="chip">published features</span>{% endif %}</td>
+    <td class="mono">{{ finding.where or '' }}</td>
+  </tr>
+  {% endfor %}
+</table></div>
+{% endmacro %}
+<main>
+<header>
+  <div class="brand">Shepherd</div>
+  <h1>AI agent check for this computer</h1>
+  <p>Made {{ generated }} on this computer.</p>
+</header>
+
+<div class="cards">
+  <div class="card"><div class="n">{{ report.agents|length }}</div><div class="l">AI agent apps</div></div>
+  <div class="card"><div class="n">{{ report.servers|length }}</div><div class="l">Connected servers and connectors</div></div>
+  <div class="card"><div class="n">{{ report.skills|length }}</div><div class="l">Add-ons (skills)</div></div>
+  <div class="card {{ 'alert' if flagged else '' }}"><div class="n">{{ flagged|length }}</div><div class="l">Add-ons flagged for a closer look</div></div>
+  <div class="card {{ 'alert' if report.secrets else '' }}"><div class="n">{{ report.secrets|length }}</div><div class="l">Exposed keys</div></div>
+  <div class="card {{ 'alert' if report.reach else '' }}"><div class="n">{{ report.reach|length }}</div><div class="l">Ways agents can go further than you meant</div></div>
+</div>
+
+<section id="flagged">
+<details class="block" open>
+  <summary><h2>Add-ons flagged for a closer look</h2></summary>
+  <p class="lead">Automated rules look for patterns such as hidden instructions, download-and-run steps and code that reads credentials. A flag is not proof of harm: these are unconfirmed until reviewed.</p>
+  {% if flagged %}
+    {% for skill in flagged %}
+    <div class="item">
+      <h3>{{ skill.name }} <span class="chip sev-{{ skill.worst.value }}">{{ skill.worst.value }}</span></h3>
+      <div class="meta">Used by {{ skill.agents|join(', ') }} · <span class="mono">{{ skill.path }}</span></div>
+      {% for flag in skill.flags[:max_flags] %}
+      <div class="flag">
+        <span class="chip sev-{{ flag.severity.value }}">{{ flag.severity.value }}</span>
+        <strong>{{ flag.category }}</strong> — {{ flag.detail }}
+        <span class="meta mono">{{ flag.location }}</span>
+        {% if flag.evidence %}<code class="evidence">{{ flag.evidence }}</code>{% endif %}
+      </div>
+      {% endfor %}
+      {% if skill.flags|length > max_flags %}
+      <details><summary>{{ skill.flags|length - max_flags }} more</summary>
+        {% for flag in skill.flags[max_flags:] %}
+        <div class="flag">
+          <span class="chip sev-{{ flag.severity.value }}">{{ flag.severity.value }}</span>
+          <strong>{{ flag.category }}</strong> — {{ flag.detail }}
+          <span class="meta mono">{{ flag.location }}</span>
+          {% if flag.evidence %}<code class="evidence">{{ flag.evidence }}</code>{% endif %}
+        </div>
+        {% endfor %}
+      </details>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <p>No add-on matched the automated rules.</p>
+  {% endif %}
+</details>
+</section>
+
+<section id="keys">
+<details class="block" open>
+  <summary><h2>Exposed keys</h2></summary>
+  <p class="lead">Keys and tokens written in plain text into agent settings or add-on files, rather than kept in a password store or an environment variable. Only the type and location are shown; values are never read into this report. Long random strings and example passwords in documentation are not listed.</p>
+  {% if report.secrets %}
+  <div class="wrap"><table>
+    <tr><th>Type</th><th>Found in</th><th>Location</th></tr>
+    {% for secret in report.secrets %}
+    <tr><td>{{ secret.kind }}</td><td>{{ secret.where }}</td><td class="mono">{{ secret.location }}</td></tr>
+    {% endfor %}
+  </table></div>
+  {% else %}
+    <p>No keys found written into agent settings or add-ons.</p>
+  {% endif %}
+</details>
+</section>
+
+<section id="reach">
+<details class="block" open>
+  <summary><h2>Where your agents can go further than you meant</h2></summary>
+  <p class="lead">Where an AI agent on this computer can reach beyond what you meant to hand it. Each item comes from a setting or file on this computer, or from an app's default when nothing is set; items marked "published features" describe what an app is built to do.</p>
+  {% for part in reach_parts %}
+  {% set findings = report.reach_part(part.key) %}
+  <details class="part" open>
+    <summary><h3>{{ part.title }} ({{ findings|length }})</h3></summary>
+    <p class="lead">{{ part.lead }}</p>
+    {% if part.key == 'logins' and findings %}
+    <p>{% if report.command_agents %}Agents on this computer that can run commands: {{ report.command_agents|join(', ') }}.{% else %}No agent that can run commands was found on this computer.{% endif %}</p>
+    {% endif %}
+    {% if findings %}
+    {{ reach_table(part, findings[:max_reach_rows]) }}
+    {% if findings|length > max_reach_rows %}
+    <details><summary>{{ findings|length - max_reach_rows }} more</summary>
+      {{ reach_table(part, findings[max_reach_rows:]) }}
+    </details>
+    {% endif %}
+    {% else %}
+    <p>Nothing found.</p>
+    {% endif %}
+  </details>
+  {% endfor %}
+</details>
+</section>
+
+<section id="servers">
+<details class="block" open>
+  <summary><h2>What your agents can do</h2></summary>
+  <p class="lead">Each server or connector gives an agent tools: things it can do in other systems, usually with the signed-in person's own access.</p>
+  {% if not labels_present %}
+  <p class="note">Labels that sort tools by consequence (changes records, sends information outside, changes access) are not included in this offline scan. Tool names and their own descriptions are listed as reported by each tool.</p>
+  {% endif %}
+  {% for server in servers %}
+  <div class="item">
+    <h3>{{ server.name }}{% if server.catalog_name and server.catalog_name|lower != server.name|lower %} <span class="meta">({{ server.catalog_name }})</span>{% endif %}</h3>
+    <div class="meta">{{ server.agent }} · {{ kind_labels[server.kind] }}{% if server.config_path %} · <span class="mono">{{ server.config_path }}</span>{% endif %}</div>
+    {% if server.launch %}<div class="meta">Runs as <code>{{ server.launch }}</code></div>{% endif %}
+    {% if server.credentials %}<div>Credentials in its settings: {% for name in server.credentials %}<span class="chip mono">{{ name }}</span>{% endfor %}</div>{% endif %}
+    {% if server.tools %}
+      {% set grouped = group_tools(server.tools) %}
+      {% for pack, tools in grouped %}
+      <details {{ 'open' if (pack != 'UNLABELLED' and loop.index == 1) or (grouped|length == 1 and tools|length <= 10) else '' }}>
+        <summary>{% if pack == 'UNLABELLED' %}{{ tools|length }} tool{{ 's' if tools|length != 1 else '' }}{% else %}<span class="pack">{{ pack_labels[pack] }}</span>: {{ tools|length }} tool{{ 's' if tools|length != 1 else '' }}{% endif %}</summary>
+        <ul class="tools">
+          {% for tool in tools %}<li><code>{{ tool.name }}</code>{% if tool.description %} — {{ tool.description }}{% endif %}</li>{% endfor %}
+        </ul>
+      </details>
+      {% endfor %}
+    {% else %}
+      <div class="meta">{{ no_tools_reason(server) }}</div>
+    {% endif %}
+    {% if server.error %}<div class="meta">Could not be read: {{ server.error }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  {% for app in described_apps %}
+  <div class="item">
+    <h3>{{ app.name }}</h3>
+    <div class="meta">App on this computer · its connections are not visible to this scan</div>
+    {% if app.site_access %}<ul class="plain">{% for access in app.site_access %}<li>{{ access }}</li>{% endfor %}</ul>{% endif %}
+    {% if app.can_do %}<div>{{ app.can_do }} <span class="chip">published features</span></div>{% endif %}
+  </div>
+  {% endfor %}
+  {% if not servers and not described_apps %}
+    <p>No servers or connectors found.</p>
+  {% endif %}
+</details>
+</section>
+
+<section id="agents">
+<details class="block" open>
+  <summary><h2>AI agent apps found</h2></summary>
+  <div class="wrap"><table>
+    <tr><th>App</th><th>Servers</th><th>Add-ons</th><th>Settings location</th></tr>
+    {% for agent in report.agents %}
+    <tr>
+      <td>{{ agent.name }}{% if agent.found_by %}<div class="meta">Found: {{ found_by_text(agent) }}</div>{% endif %}</td>
+      <td>{{ agent.servers if agent.seen_inside else '–' }}</td>
+      <td>{{ agent.skills if agent.seen_inside else '–' }}</td>
+      <td>{% if agent.seen_inside %}<span class="mono">{{ agent.path }}</span>{% else %}Can't see inside: {{ agent.note }}{% endif %}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No AI agent apps found.</td></tr>
+    {% endfor %}
+  </table></div>
+</details>
+</section>
+
+{% if report.problems or unchecked or report.kept_elsewhere %}
+<section id="unchecked">
+<details class="block" open>
+  <summary><h2>Could not be checked</h2></summary>
+  <ul class="plain">
+    {% for problem in report.problems %}<li>{{ problem }}</li>{% endfor %}
+    {% for skill in unchecked %}<li>{{ skill.name }} (<span class="mono">{{ skill.path }}</span>): {{ skill.error }}</li>{% endfor %}
+    {% for note in report.kept_elsewhere %}<li>{{ note }}</li>{% endfor %}
+  </ul>
+</details>
+</section>
+{% endif %}
+
+<section id="limits">
+<details class="block" open>
+  <summary><h2>What this scan cannot see</h2></summary>
+  <ul class="plain">
+    <li>What the agents actually did. This is a snapshot of what they are able to do, not a record of their actions.</li>
+    <li>Connectors added to an AI account and used only on the web, such as in ChatGPT or claude.ai in a browser.</li>
+    <li>Agents running on servers rather than on this computer.</li>
+    <li>What each credential is allowed to reach. The scan sees that a tool uses someone's token, not what that token can do.</li>
+    <li>Whether an app was given control of this computer in the system's privacy settings. Items marked "published features" describe what the app is built to do.</li>
+    <li>AI built into a browser itself, such as Gemini in Chrome or Copilot Mode in Edge.</li>
+    <li>Apps installed outside the Applications folders are found only by their command or settings folder.</li>
+    {% if not report.local_servers_started %}<li>Tools of local servers that were not started during this scan.</li>{% endif %}
+  </ul>
+</details>
+</section>
+
+<footer>Shepherd scan {{ report.tool_version }} · generated {{ generated }}</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,2463 @@
+{
+ "version": 1,
+ "apps": [
+  {
+   "id": "agent-deck",
+   "name": "Agent Deck",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "agent-deck"
+   ],
+   "folders": [
+    "~/.agent-deck/config.toml",
+    "~/.agent-deck"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "agent-macos",
+   "name": "Agent! for macOS",
+   "kind": "computer",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Agent!.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Operates apps on this computer by looking at the screen and using the mouse and keyboard.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "aider",
+   "name": "Aider",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "aider"
+   ],
+   "folders": [
+    "~/.aider.conf.yml",
+    "~/.aider.model.settings.yml"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "amazonq",
+   "name": "Amazon Q Developer",
+   "kind": "coding",
+   "agent": "amazon_q",
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Amazon Q.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.aws/amazonq"
+   ],
+   "editor_extensions": [
+    "amazonwebservices.amazon-q-vscode"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "amp",
+   "name": "Amp",
+   "kind": "coding",
+   "agent": "amp",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.config/amp"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "antigravity",
+   "name": "Antigravity",
+   "kind": "coding",
+   "agent": "antigravity",
+   "mac_bundle_ids": [
+    "com.google.antigravity",
+    "com.google.antigravity-ide"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.antigravity",
+    "~/.antigravity-ide",
+    "~/.gemini/antigravity",
+    "~/.gemini/antigravity-ide"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "antigravity-cli",
+   "name": "Antigravity CLI",
+   "kind": "coding",
+   "agent": "antigravity cli",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "agy"
+   ],
+   "folders": [
+    "~/.gemini/antigravity-cli",
+    "~/.gemini/config"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "anythingllm",
+   "name": "AnythingLLM",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "AnythingLLM.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/anythingllm-desktop/storage",
+    "~/.config/anythingllm-desktop/storage"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "augment",
+   "name": "Augment (Auggie)",
+   "kind": "coding",
+   "agent": "augment",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "auggie"
+   ],
+   "folders": [
+    "~/.augment"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "backyard-ai",
+   "name": "Backyard AI",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Backyard AI.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "betterbot",
+   "name": "BetterBot",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "BetterBot.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "bito",
+   "name": "Bito",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [
+    "bito.bito"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "blackbox",
+   "name": "BLACKBOX AI",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [
+    "blackboxapp.blackbox"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "bloop",
+   "name": "bloop",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "bloop.app",
+    "Bloop.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/ai.bloop.bloop/bleep",
+    "~/.local/share/bloop/bleep"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "boltai",
+   "name": "BoltAI",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "BoltAI.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "browseros",
+   "name": "BrowserOS",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "BrowserOS.app",
+    "BrowserOS Dev.app"
+   ],
+   "binaries": [
+    "browseros-cli"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "AI browser with a built-in agent that acts on sites you are signed in to in it.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "chat2db",
+   "name": "Chat2DB",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Chat2DB.app"
+   ],
+   "binaries": [
+    "chat2db"
+   ],
+   "folders": [
+    "~/.chat2db-docker"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "chatgpt",
+   "name": "ChatGPT",
+   "kind": "assistant",
+   "agent": "codex",
+   "mac_bundle_ids": [
+    "com.openai.codex"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": "computer",
+   "can_do": "Chat, Work and Codex in one app: runs commands and edits files, uses connected apps, and with Computer Use can operate other apps.",
+   "kept_elsewhere": "Apps, connectors and plugins added on the web are kept in your ChatGPT account.",
+   "credential_files": []
+  },
+  {
+   "id": "chatgpt-extension",
+   "name": "ChatGPT browser extension",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [
+    "hehggadaopoacecdllhhajmbjkdcmajg"
+   ],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "Lets the ChatGPT app control your browser.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "chatgpt-classic",
+   "name": "ChatGPT Classic",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.openai.chat"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/com.openai.chat"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "'Work with Apps' reads from and edits content in other apps on this computer.",
+   "kept_elsewhere": "Its connectors and custom instructions are kept in your ChatGPT account.",
+   "credential_files": []
+  },
+  {
+   "id": "claude-code",
+   "name": "Claude Code",
+   "kind": "coding",
+   "agent": "claude code",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "claude"
+   ],
+   "folders": [
+    "~/.claude"
+   ],
+   "editor_extensions": [
+    "anthropic.claude-code"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.claude/.credentials.json",
+     "Claude sign-in"
+    ]
+   ]
+  },
+  {
+   "id": "claude-desktop",
+   "name": "Claude Desktop",
+   "kind": "assistant",
+   "agent": "claude desktop",
+   "mac_bundle_ids": [
+    "com.anthropic.claudefordesktop"
+   ],
+   "mac_app_names": [
+    "Claude.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/Claude"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": "computer",
+   "can_do": "Chats and Cowork tasks use the connectors on your Claude account and folders you share; computer use can operate apps on this computer.",
+   "kept_elsewhere": "Connectors added on claude.ai are kept in your Claude account; only the ones this app has recorded on this computer are listed.",
+   "credential_files": []
+  },
+  {
+   "id": "claude-in-chrome",
+   "name": "Claude in Chrome",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [
+    "fcoeoabgfenejglbffodgkkbkcdhcgfn"
+   ],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "Acts in your signed-in browser: navigates, fills in forms and clicks, and can run on its own or on a schedule.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "cline",
+   "name": "Cline",
+   "kind": "coding",
+   "agent": "cline",
+   "mac_bundle_ids": [
+    "bot.cline.app"
+   ],
+   "mac_app_names": [],
+   "binaries": [
+    "cline"
+   ],
+   "folders": [
+    "~/.cline"
+   ],
+   "editor_extensions": [
+    "saoudrizwan.claude-dev"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.cline/data/secrets.json",
+     "API keys Cline saved in a file"
+    ]
+   ]
+  },
+  {
+   "id": "cmux",
+   "name": "cmux",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "cmux.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.config/cmux/cmux.json",
+    "~/Library/Application Support/cmux",
+    "~/.cmuxterm"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "codex",
+   "name": "Codex",
+   "kind": "coding",
+   "agent": "codex",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "codex"
+   ],
+   "folders": [
+    "~/.codex"
+   ],
+   "editor_extensions": [
+    "openai.chatgpt"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.codex/auth.json",
+     "ChatGPT or OpenAI sign-in"
+    ]
+   ]
+  },
+  {
+   "id": "continue",
+   "name": "Continue",
+   "kind": "coding",
+   "agent": "continue",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.continue"
+   ],
+   "editor_extensions": [
+    "continue.continue"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "crab-code",
+   "name": "Crab Code",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "crab-code",
+    "crabcode"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "crush",
+   "name": "Crush",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "crush"
+   ],
+   "folders": [
+    "~/.config/crush/crush.json",
+    "~/.local/share/crush/crush.json"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "cursor",
+   "name": "Cursor",
+   "kind": "coding",
+   "agent": "cursor",
+   "mac_bundle_ids": [
+    "com.todesktop.230313mzl4w4u92"
+   ],
+   "mac_app_names": [
+    "Cursor.app"
+   ],
+   "binaries": [
+    "cursor-agent",
+    "cursor"
+   ],
+   "folders": [
+    "~/.cursor"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "cyclop-one",
+   "name": "Cyclop One",
+   "kind": "computer",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Cyclop One.app",
+    "CyclopOne.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.cyclopone/skills",
+    "~/.cyclopone"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Operates apps on this computer by looking at the screen and using the mouse and keyboard.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "devin",
+   "name": "Devin",
+   "kind": "coding",
+   "agent": "devin",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "devin"
+   ],
+   "folders": [
+    "~/.config/devin",
+    "~/.devin"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "devin-desktop",
+   "name": "Devin Desktop",
+   "kind": "coding",
+   "agent": "devin",
+   "mac_bundle_ids": [
+    "com.exafunction.windsurf"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "dia-browser",
+   "name": "Dia Browser",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [
+    "company.thebrowser.dia"
+   ],
+   "mac_app_names": [
+    "Dia.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "AI browser: its assistant can read and act on pages you are signed in to in Dia.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "docker-agent",
+   "name": "Docker Agent",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "docker-agent",
+    "cagent"
+   ],
+   "folders": [
+    "~/.docker/cli-plugins/docker-agent",
+    "~/.cagent/session.db"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "eigent",
+   "name": "Eigent",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Eigent.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "factory",
+   "name": "Factory (Droid)",
+   "kind": "coding",
+   "agent": "factory",
+   "mac_bundle_ids": [
+    "ai.factory.desktop"
+   ],
+   "mac_app_names": [],
+   "binaries": [
+    "droid"
+   ],
+   "folders": [
+    "~/.factory"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "fazm",
+   "name": "Fazm",
+   "kind": "computer",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Fazm.app"
+   ],
+   "binaries": [
+    "fazm"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Operates apps on this computer by looking at the screen and using the mouse and keyboard.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "gemini-app",
+   "name": "Gemini (desktop app)",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.google.GeminiMacOS"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "The Spark agent edits files in folders you grant and acts in connected Google apps.",
+   "kept_elsewhere": "Its connected apps are kept in your Google account.",
+   "credential_files": []
+  },
+  {
+   "id": "gemini-cli",
+   "name": "Gemini CLI (now Antigravity CLI)",
+   "kind": "coding",
+   "agent": "gemini cli",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "gemini"
+   ],
+   "folders": [
+    "~/.gemini/settings.json"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.gemini/oauth_creds.json",
+     "Google sign-in"
+    ],
+    [
+     "~/.gemini/mcp-oauth-tokens.json",
+     "sign-ins to MCP servers"
+    ]
+   ]
+  },
+  {
+   "id": "gemini-code-assist",
+   "name": "Gemini Code Assist",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/google-vscode-extension"
+   ],
+   "editor_extensions": [
+    "google.geminicodeassist"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "genspark",
+   "name": "Genspark",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [
+    "hmdkfngkncmbgiehonfebecighedjiak"
+   ],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "Browser agent with a built-in MCP store that acts on sites in your browser.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "github-copilot",
+   "name": "GitHub Copilot",
+   "kind": "coding",
+   "agent": "github copilot",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.copilot"
+   ],
+   "editor_extensions": [
+    "github.copilot",
+    "github.copilot-chat"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.copilot/config.json",
+     "GitHub sign-in for Copilot CLI"
+    ]
+   ]
+  },
+  {
+   "id": "github-copilot-app",
+   "name": "GitHub Copilot app",
+   "kind": "coding",
+   "agent": "github copilot",
+   "mac_bundle_ids": [
+    "com.github.githubapp"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/com.github.githubapp"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "glean",
+   "name": "Glean",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.glean.desktop"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "Searches and acts across your work apps; Glean Tau works on local files, apps and code.",
+   "kept_elsewhere": "Its connections are kept in your company's Glean account.",
+   "credential_files": []
+  },
+  {
+   "id": "goose",
+   "name": "Goose",
+   "kind": "coding",
+   "agent": "goose",
+   "mac_bundle_ids": [
+    "com.electron.goose"
+   ],
+   "mac_app_names": [
+    "Goose.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.config/goose"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.config/goose/secrets.yaml",
+     "API keys goose saved in a file"
+    ]
+   ]
+  },
+  {
+   "id": "gpt4all",
+   "name": "GPT4All",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "GPT4All.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/nomic.ai/GPT4All",
+    "~/.local/share/nomic.ai/GPT4All"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "gptscript",
+   "name": "GPTScript",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "gptscript"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "grammarly",
+   "name": "Grammarly (Superhuman Go)",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.grammarly.ProjectLlama"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "Reads text you type in any app; its Superhuman Go agents draft and send email, with connectors such as Gmail, Outlook, Slack and Jira.",
+   "kept_elsewhere": "Its connectors are kept in your Superhuman account.",
+   "credential_files": []
+  },
+  {
+   "id": "granola",
+   "name": "Granola",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.granola.app"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "Captures meeting audio on this computer and syncs notes to connected tools such as your CRM.",
+   "kept_elsewhere": "Notes and integrations are kept in your Granola account.",
+   "credential_files": []
+  },
+  {
+   "id": "grok-bot",
+   "name": "Grok Bot",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.anysphere.sand"
+   ],
+   "mac_app_names": [
+    "Grok Bot.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.grokbot",
+    "~/Library/Application Support/com.anysphere.sand"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": "computer",
+   "can_do": "Always-on bots on a cloud computer with a browser, terminal and files; they sign in to web apps such as inboxes and CRMs, run scheduled routines, and through a helper on this computer can run commands and read files here.",
+   "kept_elsewhere": "Its bots, connectors and skills live on its cloud computer and in your account.",
+   "credential_files": [
+    [
+     "~/.grokbot/local-exec-daemon-credential.json",
+     "credential of Grok Bot's local command helper"
+    ]
+   ]
+  },
+  {
+   "id": "grok-build",
+   "name": "Grok Build",
+   "kind": "coding",
+   "agent": "grok build",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.grok/config.toml"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "hermes-agent",
+   "name": "Hermes Agent",
+   "kind": "coding",
+   "agent": "hermes agent",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.hermes"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "jan",
+   "name": "Jan",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Jan.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/Jan/data",
+    "~/.config/Jan/data",
+    "~/.local/share/Jan/data"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "junie",
+   "name": "JetBrains Junie",
+   "kind": "coding",
+   "agent": "junie",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "junie"
+   ],
+   "folders": [
+    "~/.junie"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "kilo-code",
+   "name": "Kilo Code",
+   "kind": "coding",
+   "agent": "kilo code",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.config/kilo",
+    "~/.kilo",
+    "~/.kilocode"
+   ],
+   "editor_extensions": [
+    "kilocode.kilo-code"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "kimi-code",
+   "name": "Kimi Code",
+   "kind": "coding",
+   "agent": "kimi code",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "kimi"
+   ],
+   "folders": [
+    "~/.kimi-code",
+    "~/.kimi"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.kimi-code/credentials",
+     "Kimi sign-in"
+    ]
+   ]
+  },
+  {
+   "id": "kiro",
+   "name": "Kiro",
+   "kind": "coding",
+   "agent": "kiro",
+   "mac_bundle_ids": [
+    "dev.kiro.desktop"
+   ],
+   "mac_app_names": [
+    "Kiro.app",
+    "Kiro CLI.app"
+   ],
+   "binaries": [
+    "kiro-cli",
+    "kiro"
+   ],
+   "folders": [
+    "~/.kiro"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "klaw",
+   "name": "klaw",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.klaw/agents",
+    "~/.klaw/workspace"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "koboldcpp",
+   "name": "KoboldCpp",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "koboldcpp",
+    "koboldcpp-linux-x64",
+    "koboldcpp-linux-x64-oldpc",
+    "koboldcpp-mac-arm64"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "lemonade",
+   "name": "Lemonade Server",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Lemonade.app"
+   ],
+   "binaries": [
+    "lemond",
+    "lemonade-tray"
+   ],
+   "folders": [
+    "~/.cache/lemonade/config.json"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "llamacpp",
+   "name": "llama.cpp",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "llama-cli",
+    "llama-server",
+    "llama-run"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "lmstudio",
+   "name": "LM Studio",
+   "kind": "local models",
+   "agent": "lm studio",
+   "mac_bundle_ids": [
+    "ai.elementlabs.lmstudio"
+   ],
+   "mac_app_names": [
+    "LM Studio.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.lmstudio",
+    "~/.cache/lm-studio",
+    "~/Library/Application Support/LM Studio"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "localai",
+   "name": "LocalAI",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "local-ai",
+    "localai"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "manus",
+   "name": "Manus",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "im.manus.desktop",
+    "ai.manus.agents"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": "computer",
+   "can_do": "'My Computer' runs commands on this computer with per-command approval; connectors include Gmail, Slack and GitHub.",
+   "kept_elsewhere": "Its connectors and agents are kept in your Manus account.",
+   "credential_files": []
+  },
+  {
+   "id": "melty",
+   "name": "Melty",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "meltycode.app"
+   ],
+   "binaries": [
+    "meltycode"
+   ],
+   "folders": [
+    "~/.meltycode",
+    "~/.meltycode-server"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "microsoft-copilot",
+   "name": "Microsoft Copilot",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.microsoft.m365copilot"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "Sends mail, schedules meetings and posts in Teams with your Microsoft account; Cowork can drive your Edge browser.",
+   "kept_elsewhere": "Its connections and plugins are kept in your Microsoft account.",
+   "credential_files": []
+  },
+  {
+   "id": "mistral-vibe",
+   "name": "Mistral Vibe",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "vibe-acp"
+   ],
+   "folders": [
+    "~/.vibe/config.toml",
+    "~/.vibe/trusted_folders.toml"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "monday-desktop",
+   "name": "monday.com Desktop",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "monday.com.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "monday.com AI agents act on boards and items in your account.",
+   "kept_elsewhere": "Its agents are kept in your monday.com account.",
+   "credential_files": []
+  },
+  {
+   "id": "msty",
+   "name": "Msty",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Msty.app"
+   ],
+   "binaries": [
+    "msty"
+   ],
+   "folders": [
+    "~/Library/Application Support/Msty",
+    "~/.config/Msty"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "muse",
+   "name": "Muse (Meta)",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.meta.endo"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/com.meta.endo"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Reads and updates files and acts in Messages, Notes, Reminders, Mail and Calendar through Full Disk Access and Automation; computer use can operate any app. Connectors include Gmail, calendar, Notion, GitHub and Box.",
+   "kept_elsewhere": "The agent and its connectors run in Meta's cloud.",
+   "credential_files": []
+  },
+  {
+   "id": "notion",
+   "name": "Notion",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "notion.id"
+   ],
+   "mac_app_names": [
+    "Notion.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "Notion AI agents create and edit pages and databases in your workspace and use connected apps.",
+   "kept_elsewhere": "Its agents and connections are kept in your Notion workspace.",
+   "credential_files": []
+  },
+  {
+   "id": "ollama",
+   "name": "Ollama",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Ollama.app"
+   ],
+   "binaries": [
+    "ollama"
+   ],
+   "folders": [
+    "~/.ollama"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "omnigent",
+   "name": "OmniGent",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "omnigent"
+   ],
+   "folders": [
+    "~/.omnigent/config.yaml",
+    "~/.omnigent"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "opcode",
+   "name": "opcode",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Opcode.app",
+    "opcode.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "open-webui",
+   "name": "Open WebUI",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "open-webui"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "openclaw",
+   "name": "OpenClaw",
+   "kind": "assistant",
+   "agent": "openclaw",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "openclaw"
+   ],
+   "folders": [
+    "~/.openclaw/openclaw.json"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "opencode",
+   "name": "OpenCode",
+   "kind": "coding",
+   "agent": "opencode",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "opencode"
+   ],
+   "folders": [
+    "~/.config/opencode",
+    "~/.opencode",
+    "~/.opencode.json"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.local/share/opencode/auth.json",
+     "sign-ins to AI providers"
+    ]
+   ]
+  },
+  {
+   "id": "openhands",
+   "name": "OpenHands",
+   "kind": "coding",
+   "agent": "openhands",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "openhands"
+   ],
+   "folders": [
+    "~/.openhands"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "opera-neon",
+   "name": "Opera Neon",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.operasoftware.OperaNeon",
+    "com.operasoftware.OperaNeonDeveloper"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "AI browser that acts on sites you are signed in to in it, and lets outside agents use it.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "perplexity",
+   "name": "Perplexity",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "ai.perplexity.macv3"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Works with local files and apps, uses the computer and drives the Comet browser; supports custom MCP connectors.",
+   "kept_elsewhere": "Its connectors, skills and instructions are kept in your Perplexity account.",
+   "credential_files": []
+  },
+  {
+   "id": "perplexity-comet",
+   "name": "Perplexity Comet",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [
+    "ai.perplexity.comet"
+   ],
+   "mac_app_names": [
+    "Comet.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "browser",
+   "can_do": "AI browser: its assistant can act on any site you are signed in to in Comet.",
+   "kept_elsewhere": "Its assistant settings are kept in your Perplexity account.",
+   "credential_files": []
+  },
+  {
+   "id": "pi",
+   "name": "Pi",
+   "kind": "coding",
+   "agent": "pi",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.pi/agent"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": [
+    [
+     "~/.pi/agent/auth.json",
+     "sign-ins to AI providers"
+    ]
+   ]
+  },
+  {
+   "id": "pieces",
+   "name": "Pieces for Developers",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "pieces-os"
+   ],
+   "folders": [
+    "~/Library/com.pieces.os",
+    "~/.local/share/com.pieces.os"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "pinokio",
+   "name": "Pinokio",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Pinokio.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/pinokio",
+    "~/pinokio/api",
+    "~/pinokio/bin"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "plandex",
+   "name": "Plandex CLI",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "plandex"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "qodo",
+   "name": "Qodo",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "qodo"
+   ],
+   "folders": [],
+   "editor_extensions": [
+    "codium.codium",
+    "qodo.qodo-vscode"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "qwen-code",
+   "name": "Qwen Code",
+   "kind": "coding",
+   "agent": "qwen code",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "qwen"
+   ],
+   "folders": [
+    "~/.qwen"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "ra-aid",
+   "name": "RA.Aid",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "ra-aid"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "raycast",
+   "name": "Raycast",
+   "kind": "assistant",
+   "agent": "raycast",
+   "mac_bundle_ids": [
+    "com.raycast.macos"
+   ],
+   "mac_app_names": [
+    "Raycast.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.config/raycast"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "Runs AI chats, commands and MCP tools from the launcher, including actions in connected apps.",
+   "kept_elsewhere": "Its MCP servers and tool permission choices are kept in an encrypted app database.",
+   "credential_files": []
+  },
+  {
+   "id": "replit",
+   "name": "Replit Agent",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [
+    "replit.replit"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "roo-code",
+   "name": "Roo Code",
+   "kind": "coding",
+   "agent": "roo code",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [
+    "rooveterinaryinc.roo-cline"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "sculptor",
+   "name": "Sculptor",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Sculptor.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "simular",
+   "name": "Simular",
+   "kind": "computer",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Simular.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Operates apps on this computer by looking at the screen and using the mouse and keyboard.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "slack",
+   "name": "Slack (Slackbot)",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "com.tinyspeck.slackmacgap"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "Slackbot acts in connected apps (such as Google, Atlassian, Box, Notion and Salesforce) through MCP, and runs skills that can be shared and scheduled.",
+   "kept_elsewhere": "Slackbot's connections and skills are kept in your Slack workspace.",
+   "credential_files": []
+  },
+  {
+   "id": "cody",
+   "name": "Sourcegraph Cody",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "cody"
+   ],
+   "folders": [],
+   "editor_extensions": [
+    "sourcegraph.cody-ai"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "supermaven",
+   "name": "Supermaven",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [
+    "supermaven.supermaven"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "swe-agent",
+   "name": "SWE-agent",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "sweagent"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "tabby-terminal",
+   "name": "Tabby Terminal AI Integration",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/Library/Application Support/tabby/plugins/node_modules/tabby-mcp"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "tabnine",
+   "name": "Tabnine",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.config/TabNine"
+   ],
+   "editor_extensions": [
+    "tabnine.tabnine-vscode"
+   ],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "trae",
+   "name": "TRAE",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "TRAE.app",
+    "Trae.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "ui-tars-desktop",
+   "name": "UI-TARS Desktop",
+   "kind": "computer",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "UI TARS.app",
+    "UI-TARS.app"
+   ],
+   "binaries": [
+    "UI-TARS"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Operates apps on this computer by looking at the screen and using the mouse and keyboard.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "uipath-assistant",
+   "name": "UiPath Assistant",
+   "kind": "computer",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "UiPath Assistant.app"
+   ],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": "computer",
+   "can_do": "Starts automations that operate apps on this computer.",
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "vllm",
+   "name": "vLLM",
+   "kind": "local models",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "vllm"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "void",
+   "name": "Void",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Void.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.void-editor",
+    "~/.void-server"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "vscode",
+   "name": "VS Code",
+   "kind": "coding",
+   "agent": "vscode",
+   "mac_bundle_ids": [
+    "com.microsoft.VSCode",
+    "com.microsoft.VSCodeInsiders"
+   ],
+   "mac_app_names": [],
+   "binaries": [
+    "code"
+   ],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "warp",
+   "name": "Warp",
+   "kind": "coding",
+   "agent": "warp",
+   "mac_bundle_ids": [
+    "dev.warp.Warp-Stable"
+   ],
+   "mac_app_names": [
+    "Warp.app"
+   ],
+   "binaries": [],
+   "folders": [
+    "~/.warp"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": "MCP servers added inside Warp are kept in its app database and your Warp account; only servers set in its files are listed.",
+   "credential_files": []
+  },
+  {
+   "id": "wave-terminal",
+   "name": "Wave Terminal",
+   "kind": "coding",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [
+    "Wave.app",
+    "Wave Terminal.app"
+   ],
+   "binaries": [
+    "waveterm"
+   ],
+   "folders": [
+    "~/.config/waveterm",
+    "~/.config/waveterm/settings.json",
+    "~/.config/waveterm/waveai.json"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "windsurf",
+   "name": "Windsurf (now Devin Desktop)",
+   "kind": "coding",
+   "agent": "windsurf",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [
+    "~/.codeium/windsurf"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "zed",
+   "name": "Zed",
+   "kind": "coding",
+   "agent": "zed",
+   "mac_bundle_ids": [
+    "dev.zed.Zed"
+   ],
+   "mac_app_names": [
+    "Zed.app"
+   ],
+   "binaries": [
+    "zed",
+    "zeditor"
+   ],
+   "folders": [
+    "~/.config/zed"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "zeptoclaw",
+   "name": "ZeptoClaw",
+   "kind": "assistant",
+   "agent": "zeptoclaw",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [
+    "zeptoclaw"
+   ],
+   "folders": [
+    "~/.zeptoclaw"
+   ],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "zia-search",
+   "name": "Zia Search",
+   "kind": "browser",
+   "agent": null,
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [
+    "jebapbhanimlfnddnammimbopafiddkd"
+   ],
+   "runs_commands": false,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "zoo-code",
+   "name": "Zoo Code",
+   "kind": "coding",
+   "agent": "zoo code",
+   "mac_bundle_ids": [],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [
+    "zoocodeorganization.zoo-code"
+   ],
+   "browser_extensions": [],
+   "runs_commands": true,
+   "control": null,
+   "can_do": null,
+   "kept_elsewhere": null,
+   "credential_files": []
+  },
+  {
+   "id": "zoom",
+   "name": "Zoom (AI Companion)",
+   "kind": "assistant",
+   "agent": null,
+   "mac_bundle_ids": [
+    "us.zoom.xos"
+   ],
+   "mac_app_names": [],
+   "binaries": [],
+   "folders": [],
+   "editor_extensions": [],
+   "browser_extensions": [],
+   "runs_commands": false,
+   "control": null,
+   "can_do": "AI Companion runs custom agents and can update your CRM from meeting follow-ups.",
+   "kept_elsewhere": "Its agents and workflows are kept in your Zoom account.",
+   "credential_files": []
+  }
+ ]
+}

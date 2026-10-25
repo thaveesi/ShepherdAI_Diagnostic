@@ -1,0 +1,557 @@
+# Modified from Apache-2.0 licensed code; see THIRD_PARTY_NOTICES.txt.
+"""Claude Code discoverer: ``~/.claude.json`` + ``~/.claude/skills`` + per-project,
+plugin, command, and enterprise (managed-mcp) scopes."""
+
+import logging
+import os
+import sys
+from pathlib import Path
+
+from shepherd_scan._vendor.discovery.agents.base import (
+    McpConfigsResult,
+    SkillsDirsResult,
+    _canonicalize_keys,
+)
+from shepherd_scan._vendor.discovery.agents.claude_plugins import _CLAUDE_MCP_FORMATS, ClaudePluginDiscoverer
+from shepherd_scan._vendor.discovery.models import ClaudeConfigFile, CouldNotParseMCPConfig
+from shepherd_scan._vendor.discovery.well_known_clients import CLAUDE_CODE_NAME, expand_path
+
+logger = logging.getLogger(__name__)
+
+_MAX_EXTERNAL_PLUGIN_ROOTS = 256
+_MAX_REGISTRY_ENTRIES = 4096
+_UNSET = object()
+
+
+class ClaudeCodeDiscoverer(ClaudePluginDiscoverer):
+    """Claude Code discovery: ``~/.claude.json`` + ``~/.claude/skills/`` + per-project scopes.
+
+    The public ``discover_mcp_servers`` / ``discover_skills`` methods orchestrate six
+    private helpers split by scope:
+
+    * ``_discover_global_folders`` / ``_discover_project_folders`` enumerate where to look.
+    * ``_discover_global_mcp_servers`` reads the top-level ``mcpServers`` key in
+      ``~/.claude.json``; ``_discover_project_mcp_servers`` reads each
+      ``projects.<path>.mcpServers`` block.
+    * ``_discover_global_skill`` reads ``~/.claude/skills``;
+      ``_discover_project_skills`` reads ``<project>/.claude/skills`` for every
+      project listed in ``~/.claude.json``.
+    """
+
+    name = CLAUDE_CODE_NAME
+
+    _install_path = "~/.claude"
+    _mcp_config_path = "~/.claude.json"
+    _skills_subdir = "skills"
+    _project_dotclaude_subdir = ".claude"
+    # Project-scoped skill dirs scanned at every opened project root and its
+    # ancestors. ``.claude/skills`` is Claude Code's canonical project skills
+    # location; ``.agents/skills`` is the cross-agent compatibility convention
+    # (verified that Claude Code also loads it), shared with the VS Code-family
+    # discoverers.
+    _project_skills_relative: tuple[str, ...] = (".claude/skills", ".agents/skills")
+    # Subtrees under a plugin *root* (see ``_plugin_root_dirs``) that hold installed
+    # plugins. ``cache`` is the hydrated install tree, ``repos`` is its legacy name,
+    # and ``synced`` holds plugins downloaded from claude.ai.
+    # ``installed_plugins.json`` is authoritative for in-place installs that never
+    # reach these fixed subtrees.
+    #
+    # ``marketplaces`` is deliberately absent, and ``known_marketplaces.json`` is
+    # deliberately not read. A marketplace is a *catalog*, so its root holds plugins
+    # the user never installed — plus, for a local-directory marketplace, whatever
+    # else lives in that checkout (``node_modules``, vendored repos, repro cases),
+    # none of which are configured MCP servers. Verified against a real
+    # ``claude plugin install`` from a local-directory marketplace with a
+    # relative-path source: the plugin is *copied* into
+    # ``cache/<marketplace>/<plugin>/<version>/``, so the fixed subtrees below
+    # already cover it and the marketplace root would add reach without coverage.
+    #
+    # Residual multi-user risk: a registry entry can point into another user's home.
+    # Requiring a plugin marker, plus the traversal-depth and root-count caps, bounds
+    # that reach because this discoverer does not know every other readable home.
+    _plugin_subdirs: tuple[str, ...] = ("cache", "repos", "synced")
+
+    def __init__(self, home_directory: Path | None, target_folders: list[Path] | None = None) -> None:
+        super().__init__(home_directory, target_folders)
+        self._plugin_base_dirs_cache: list[Path] | None = None
+        self._env_plugin_cache_dir_cache: Path | None | object = _UNSET
+
+    # --- public (override AgentDiscoverer abstracts) ---
+
+    def client_exists(self) -> str | None:
+        path = self._claude_base_dir()
+        try:
+            if path.exists():
+                return path.as_posix()
+        except PermissionError:
+            logger.warning("Permission error for path %s", path.as_posix())
+        return None
+
+    def discover_mcp_servers(self) -> McpConfigsResult:
+        result: McpConfigsResult = {}
+        result.update(self._discover_global_mcp_servers())
+        result.update(self._discover_project_mcp_servers())
+        result.update(self._discover_plugin_mcp_servers())
+        result.update(self._discover_plugin_manifest_mcp_servers())
+        result.update(self._discover_managed_mcp_servers())
+        return _canonicalize_keys(result)
+
+    def discover_skills(self) -> SkillsDirsResult:
+        result: SkillsDirsResult = {}
+        result.update(self._discover_global_skill())
+        result.update(self._discover_project_skills())
+        result.update(self._discover_plugin_skills())
+        result.update(self._discover_plugin_manifest_skills())
+        # NOTE: enterprise/managed skills are a documented Claude Code scope (the
+        # "Enterprise" tier in the skills hierarchy, which overrides personal and
+        # project skills) but are intentionally NOT discovered here. Unlike
+        # ``managed-mcp.json`` — which has a fixed per-OS path (see
+        # ``_managed_mcp_path``) — the docs pin managed skills only to "managed
+        # settings" and document no concrete skills directory to scan. We do not
+        # guess a path by convention; revisit if/when the docs specify one.
+        return _canonicalize_keys(result)
+
+    # --- config-dir resolution (CLAUDE_CONFIG_DIR) ---
+
+    def _claude_base_dir(self) -> Path:
+        """The base directory holding Claude Code state (``~/.claude`` by default).
+
+        ``CLAUDE_CONFIG_DIR`` relocates this directory. The env var reflects the
+        *scanning process's* environment, so it is honored only when scanning the
+        process's own home (see :meth:`_scans_own_home`); under ``--scan-all-users``
+        the scanner can't know each *other* target user's env, so the per-home
+        default is used instead.
+        """
+        if self._scans_own_home():
+            config_dir = os.environ.get("CLAUDE_CONFIG_DIR")
+            if config_dir:
+                return Path(config_dir)
+        return expand_path(Path(self._install_path), self.home_directory)
+
+    def _config_json_path(self) -> Path:
+        """Path to the global ``.claude.json``.
+
+        When ``CLAUDE_CONFIG_DIR`` is active (own-home scan), the config lives at
+        ``<base>/.claude.json``; falls back to the legacy ``~/.claude.json`` when
+        that relocated file does not exist.
+        """
+        if self._scans_own_home() and os.environ.get("CLAUDE_CONFIG_DIR"):
+            relocated = self._claude_base_dir() / ".claude.json"
+            try:
+                if relocated.exists():
+                    return relocated
+            except OSError:
+                logger.warning("Could not read %s", relocated.as_posix())
+        return expand_path(Path(self._mcp_config_path), self.home_directory)
+
+    # --- private: folder enumeration ---
+
+    def _discover_global_folders(self) -> list[Path]:
+        """Folders that hold user-global Claude Code state (``~/.claude``, or the
+        ``CLAUDE_CONFIG_DIR`` override on own-home scans)."""
+        return [self._claude_base_dir()]
+
+    def _discover_project_folders(self) -> list[Path]:
+        """Project root paths recorded under ``projects`` in ``~/.claude.json``."""
+        data = self._load_config_raw()
+        if not isinstance(data, dict):
+            return []
+        projects = data.get("projects")
+        if not isinstance(projects, dict):
+            return []
+        return [Path(p) for p in projects if isinstance(p, str)]
+
+    # --- private: MCP discovery ---
+
+    def _discover_global_mcp_servers(self) -> McpConfigsResult:
+        """Parse top-level ``mcpServers`` from ``~/.claude.json`` — the user-global scope."""
+        config_path = self._config_json_path()
+        if not config_path.exists():
+            return {}
+        data = self._load_config_raw()
+        if isinstance(data, CouldNotParseMCPConfig):
+            return {config_path.as_posix(): data}
+        if not isinstance(data, dict):
+            return {}
+        top = data.get("mcpServers")
+        if not isinstance(top, dict) or not top:
+            return {}
+        entries = self._validate_servers(top, source=f"global mcpServers in {config_path.as_posix()}")
+        return {config_path.as_posix(): entries}
+
+    def _discover_project_mcp_servers(self) -> McpConfigsResult:
+        """Per-project MCP discovery for each path in ``_discovery_paths_with_ancestors``.
+
+        Two sources are checked at every path:
+
+        1. ``projects.<path>.mcpServers`` in ``~/.claude.json`` — keyed by the project path.
+        2. ``<path>/.mcp.json`` on disk — keyed by the absolute file path.
+
+        A malformed ``.mcp.json`` becomes a ``CouldNotParseMCPConfig`` entry.
+        """
+        config_path = self._config_json_path()
+        data = self._load_config_raw()
+        if isinstance(data, CouldNotParseMCPConfig):
+            return {config_path.as_posix(): data}
+        projects = data.get("projects") if isinstance(data, dict) else None
+        if not isinstance(projects, dict):
+            projects = {}
+
+        result: McpConfigsResult = {}
+        # Iterate every opened project root *and* its ancestors up to filesystem
+        # root, so config in a parent folder (e.g. a monorepo root) is picked up
+        # for the sub-projects beneath it.
+        for path in self._discovery_paths_with_ancestors():
+            key = path.as_posix()
+            # Source 1: inline ``projects.<path>.mcpServers`` recorded in ``.claude.json``.
+            # For an ancestor this only matches if that ancestor was itself opened
+            # as a project (i.e. has its own ``projects`` entry); otherwise it misses.
+            project_config = projects.get(key)
+            if isinstance(project_config, dict):
+                project_mcp = project_config.get("mcpServers")
+                if isinstance(project_mcp, dict) and project_mcp:
+                    result[key] = self._validate_servers(
+                        project_mcp, source=f"projects.{key}.mcpServers in {config_path.as_posix()}"
+                    )
+
+            # Source 2: a ``.mcp.json`` file in the folder itself — checked at every
+            # project root and ancestor, so parent-folder files are discovered too.
+            mcp_file = path / ".mcp.json"
+            parsed = self._parse_mcp_file(mcp_file, formats=_CLAUDE_MCP_FORMATS)
+            # Skip on None (missing/empty file) or an empty server list; a parse
+            # failure is a truthy ``CouldNotParseMCPConfig`` and is still recorded.
+            if not parsed:
+                continue
+            result[mcp_file.as_posix()] = parsed
+        return result
+
+    # --- private: skills discovery ---
+
+    def _discover_global_skill(self) -> SkillsDirsResult:
+        """Scan ``<install>/skills`` under each user-global folder for skills.
+
+        Routes through :meth:`AgentDiscoverer._scan_skills_dir` so a path that is
+        a regular file (``NotADirectoryError``) or an unreadable dir under another
+        user's home (``PermissionError`` on ``--scan-all-users``) is skipped rather
+        than aborting the whole discoverer — the same tolerance the VSCode-family
+        skill scans already use.
+        """
+        result: SkillsDirsResult = {}
+        for folder in self._discover_global_folders():
+            skills_dir = folder / self._skills_subdir
+            entries = self._scan_skills_dir(skills_dir)
+            if entries is not None:
+                result[skills_dir.as_posix()] = entries
+        return result
+
+    def _discover_project_skills(self) -> SkillsDirsResult:
+        """For each project (and every ancestor up to root), scan each entry in
+        ``_project_skills_relative`` (``.claude/skills`` + ``.agents/skills``) if present.
+
+        Uses :meth:`AgentDiscoverer._scan_skills_dir` for the same is-dir /
+        ``PermissionError`` tolerance as :meth:`_discover_global_skill`.
+        """
+        result: SkillsDirsResult = {}
+        for path in self._discovery_paths_with_ancestors():
+            for rel in self._project_skills_relative:
+                skills_dir = path / rel
+                entries = self._scan_skills_dir(skills_dir)
+                if entries is not None:
+                    result[skills_dir.as_posix()] = entries
+        return result
+
+    # --- private: plugin discovery ---
+
+    def _plugin_root_dirs(self) -> list[Path]:
+        """Plugin *root* directories — each holds the installed-plugin ``cache``/
+        ``repos``/``synced`` subtrees scanned per :attr:`_plugin_subdirs` (and the
+        ``marketplaces`` catalog clone, which that attribute deliberately skips).
+
+        The always-present root is ``<base>/plugins`` for each global folder
+        (``base`` already honors ``CLAUDE_CONFIG_DIR``). Two env vars add *further*
+        roots — they are appended to the default, not substituted for it, so the
+        default ``<base>/plugins`` is always scanned alongside them. Their values
+        are already at the plugins-root level, so no ``/plugins`` is appended.
+        Like ``CLAUDE_CONFIG_DIR`` they reflect the *scanning process's*
+        environment, so they are honored only on an own-home scan (see
+        :meth:`_scans_own_home`) — under ``--scan-all-users`` the scanner can't
+        know another user's env:
+
+        * ``CLAUDE_CODE_PLUGIN_CACHE_DIR`` — documented ambiguously as either an
+          additional plugins root or the cache directory itself. This method keeps
+          the root interpretation; :meth:`_ambiguous_plugin_cache_bases` adds the
+          direct-cache interpretation when the directory has no root-layout markers.
+        * ``CLAUDE_CODE_PLUGIN_SEED_DIR`` — ``os.pathsep``-separated read-only seed
+          roots mirroring the plugins layout (container/CI pre-population), so it
+          remains root-only.
+
+        Both env-var values pass through the same external-root sanitizer; relative
+        paths and filesystem anchors are ignored rather than resolved against the
+        scanner's working directory or walked as broad roots.
+
+        These env-var arms are own-home-only because they describe the scanner's
+        environment. The install and marketplace registries read by the base-dir
+        helpers live inside the target home and are therefore honored for every
+        scanned home, including ``--scan-all-users``.
+
+        All resolved roots are scanned; results key by absolute path so any overlap
+        with the default dedupes, and a non-existent root is skipped downstream.
+        """
+        roots = [folder / "plugins" for folder in self._discover_global_folders()]
+        sanitized_cache_dir = self._env_plugin_cache_dir()
+        if sanitized_cache_dir is not None:
+            roots.append(sanitized_cache_dir)
+        if self._scans_own_home():
+            seed_dir = os.environ.get("CLAUDE_CODE_PLUGIN_SEED_DIR")
+            if seed_dir:
+                for raw_seed_dir in seed_dir.split(os.pathsep):
+                    sanitized_seed_dir = self._sanitize_external_root(
+                        raw_seed_dir, source="CLAUDE_CODE_PLUGIN_SEED_DIR"
+                    )
+                    if sanitized_seed_dir is not None:
+                        roots.append(sanitized_seed_dir)
+        return roots
+
+    def _plugin_base_dirs(self) -> list[Path]:
+        """Every bounded base to scan for plugin MCP servers and skills.
+
+        The documented install subdirectories remain the fail-open backstop. The
+        internal registries are purely additive: cache entries already covered by a
+        fixed base are filtered only to avoid duplicate walks, while plausible
+        in-place install roots are added directly (never crossed with subdir names).
+        The result is cached because all four plugin discovery arms consume it.
+        """
+        if self._plugin_base_dirs_cache is not None:
+            return self._plugin_base_dirs_cache
+
+        fixed = [root / sub for root in self._plugin_root_dirs() for sub in self._plugin_subdirs]
+        extra = [
+            *self._ambiguous_plugin_cache_bases(),
+            *self._skills_dir_plugin_bases(),
+        ]
+        covered = (*fixed, *extra)
+        external: list[Path] = []
+        for root in self._installed_plugin_dirs():
+            if any(self._is_walk_reachable(root, base) for base in covered) or not self._external_root_has_marker(root):
+                continue
+            if len(external) >= _MAX_EXTERNAL_PLUGIN_ROOTS:
+                logger.warning(
+                    "Plugin install registry exceeds the %d external-root cap; ignoring remaining entries",
+                    _MAX_EXTERNAL_PLUGIN_ROOTS,
+                )
+                break
+            external.append(root)
+        self._plugin_base_dirs_cache = list(dict.fromkeys((*fixed, *extra, *external)))
+        return self._plugin_base_dirs_cache
+
+    def _installed_plugin_dirs(self) -> list[Path]:
+        """Read additive plugin roots from each target home's install registry.
+
+        ``installed_plugins.json`` is undocumented internal state, so a missing,
+        malformed, or future-version registry contributes no extra roots and never
+        suppresses the documented directory walk. ``installPath`` is authoritative
+        for cache and in-place installs alike, including paths outside the target
+        home. Unknown versions are intentionally accepted. Examined entries and
+        accepted external roots have independent caps, so cache-covered entries do
+        not consume the external-root budget while registry work remains bounded.
+        """
+        roots: list[Path] = []
+        seen: set[Path] = set()
+        examined = 0
+        registry_paths = dict.fromkeys(root / "installed_plugins.json" for root in self._plugin_root_dirs())
+        for registry_path in registry_paths:
+            data = self._load_json_file(registry_path, log_parse_errors=False)
+            if not isinstance(data, dict):
+                continue
+            plugins = data.get("plugins")
+            if not isinstance(plugins, dict):
+                continue
+            for entries in plugins.values():
+                if not isinstance(entries, list):
+                    continue
+                for entry in entries:
+                    if examined >= _MAX_REGISTRY_ENTRIES:
+                        logger.warning(
+                            "Plugin install registry exceeds the %d registry-entry cap; ignoring remaining entries",
+                            _MAX_REGISTRY_ENTRIES,
+                        )
+                        return roots
+                    examined += 1
+                    if not isinstance(entry, dict):
+                        continue
+                    root = self._sanitize_external_root(entry.get("installPath"), source="installed_plugins.json")
+                    if root is None or root in seen:
+                        continue
+                    seen.add(root)
+                    roots.append(root)
+        return roots
+
+    def _skills_dir_plugin_bases(self) -> list[Path]:
+        """Return immediate ``@skills-dir`` children carrying a plugin manifest.
+
+        Gating at the child keeps an ordinary skill folder that happens to contain
+        a stray ``.mcp.json`` from being promoted into a plugin root.
+        """
+        roots: list[Path] = []
+        for folder in self._discover_global_folders():
+            skills_dir = folder / self._skills_subdir
+            try:
+                children = list(skills_dir.iterdir())
+            except (OSError, ValueError):
+                continue
+            for child in children:
+                if len(roots) >= _MAX_EXTERNAL_PLUGIN_ROOTS:
+                    logger.warning(
+                        "Skills directory plugin roots exceed the %d external-root cap; ignoring remaining entries",
+                        _MAX_EXTERNAL_PLUGIN_ROOTS,
+                    )
+                    return roots
+                try:
+                    if (child / ".claude-plugin" / "plugin.json").is_file():
+                        roots.append(child)
+                except (OSError, ValueError):
+                    continue
+        return roots
+
+    def _ambiguous_plugin_cache_bases(self) -> list[Path]:
+        """Interpret ``CLAUDE_CODE_PLUGIN_CACHE_DIR`` as a direct cache when needed.
+
+        If a known plugins-root marker exists beneath the value, the fixed
+        root/subdir walk already covers it. Otherwise the value itself is added as a
+        base. As with the root interpretation, this scanner-environment value is
+        ignored when scanning another user's home.
+        """
+        root = self._env_plugin_cache_dir()
+        if root is None:
+            return []
+        try:
+            if any((root / marker).is_dir() for marker in ("cache", "repos", "synced", "marketplaces")):
+                return []
+        except (OSError, ValueError):
+            return []
+        return [root]
+
+    def _env_plugin_cache_dir(self) -> Path | None:
+        """Return the sanitized cache env var once for this discoverer."""
+        if self._env_plugin_cache_dir_cache is _UNSET:
+            self._env_plugin_cache_dir_cache = (
+                self._sanitize_external_root(
+                    os.environ.get("CLAUDE_CODE_PLUGIN_CACHE_DIR"),
+                    source="CLAUDE_CODE_PLUGIN_CACHE_DIR",
+                )
+                if self._scans_own_home()
+                else None
+            )
+        cached = self._env_plugin_cache_dir_cache
+        return cached if isinstance(cached, Path) else None
+
+    def _sanitize_external_root(self, raw: object, *, source: str) -> Path | None:
+        """Lexically normalize one untrusted external root, rejecting unsafe forms."""
+        if not isinstance(raw, str) or not raw.strip():
+            return None
+        raw_text = raw.strip()
+
+        def reject() -> None:
+            logger.warning("Skipping %s plugin root %s (unsafe or overly broad path)", source, raw_text)
+
+        raw_path = Path(raw_text)
+        if raw_text.startswith("~") and raw_path.parts[0] != "~":
+            reject()
+            return None
+        try:
+            candidate = expand_path(raw_path, self.home_directory)
+            candidate = Path(os.path.normpath(candidate))
+        except (OSError, ValueError):
+            reject()
+            return None
+        if raw_text.startswith("~") and not candidate.is_relative_to(self.home_directory):
+            reject()
+            return None
+        common_home_roots = {Path("/home"), Path("/Users")}
+        overly_broad = (
+            candidate.parent == candidate
+            or candidate in common_home_roots
+            or self.home_directory.is_relative_to(candidate)
+            or any(folder.is_relative_to(candidate) for folder in self._discover_global_folders())
+        )
+        if not candidate.is_absolute() or overly_broad:
+            reject()
+            return None
+        return candidate
+
+    def _external_root_has_marker(self, root: Path) -> bool:
+        """True when an external registry root plausibly contains one plugin."""
+        try:
+            return (
+                (root / ".mcp.json").is_file()
+                or any((root / manifest_dir / "plugin.json").is_file() for manifest_dir in self._plugin_manifest_dirs)
+                or any((root / directory).is_dir() for directory in ("skills", "commands", "agents"))
+            )
+        except (OSError, ValueError):
+            return False
+
+    @classmethod
+    def _is_walk_reachable(cls, path: Path, base: Path) -> bool:
+        """True when a lexical child remains beneath the base after resolving links."""
+        lexical = cls._is_under(path, base)
+        if not lexical:
+            return False
+        try:
+            return cls._is_under(Path(os.path.realpath(path)), Path(os.path.realpath(base)))
+        except (OSError, ValueError):
+            return lexical
+
+    @staticmethod
+    def _is_under(path: Path, base: Path) -> bool:
+        """Purely lexical containment used only to suppress duplicate walks."""
+        try:
+            return path == base or path.is_relative_to(base)
+        except ValueError:
+            return False
+
+    # --- private: enterprise/managed MCP discovery ---
+
+    def _managed_mcp_path(self) -> Path | None:
+        """Per-OS absolute path to the enterprise ``managed-mcp.json``, or ``None``
+        on unsupported platforms. See
+        https://code.claude.com/docs/en/managed-mcp."""
+        if sys.platform == "darwin":
+            return Path("/Library/Application Support/ClaudeCode/managed-mcp.json")
+        if sys.platform in ("linux", "linux2"):
+            return Path("/etc/claude-code/managed-mcp.json")
+        if sys.platform == "win32":
+            # ``Program Files`` may live on a non-C: drive or be relocated, so
+            # resolve it from the machine-level env var instead of hardcoding the
+            # drive. ``PROGRAMW6432`` always points at the 64-bit root (even from a
+            # 32-bit process); fall back to ``PROGRAMFILES`` then the conventional
+            # default. This is a machine-global path (not per-user), so honoring
+            # the scanning process's env is correct even under ``--scan-all-users``.
+            # (Python uppercases ``os.environ`` keys on Windows, so the canonical
+            # mixed-case ``ProgramW6432``/``ProgramFiles`` vars resolve here.)
+            program_files = os.environ.get("PROGRAMW6432") or os.environ.get("PROGRAMFILES") or r"C:\Program Files"
+            return Path(program_files) / "ClaudeCode" / "managed-mcp.json"
+        return None
+
+    def _discover_managed_mcp_servers(self) -> McpConfigsResult:
+        """Parse the system-wide ``managed-mcp.json`` (wrapped ``mcpServers``).
+
+        This is a machine-level file at an absolute system path, not a per-home
+        path, so it is identical across every home scanned on one machine;
+        downstream keying is by absolute path so duplicates collapse.
+        """
+        path = self._managed_mcp_path()
+        if path is None:
+            return {}
+        parsed = self._parse_mcp_file(path, formats=(ClaudeConfigFile,))
+        if parsed is None:
+            return {}
+        return {path.as_posix(): parsed}
+
+    # --- internal helpers ---
+
+    def _load_config_raw(self) -> dict | CouldNotParseMCPConfig | None:
+        """Read and JSON-decode the global ``.claude.json`` (honoring
+        ``CLAUDE_CONFIG_DIR`` on own-home scans). Returns ``None`` if missing,
+        a dict on success, or a ``CouldNotParseMCPConfig`` on malformed JSON.
+        """
+        return self._load_json_file(self._config_json_path())

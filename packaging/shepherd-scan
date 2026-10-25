@@ -1,0 +1,63 @@
+#!/bin/bash
+# Runs the Shepherd scan from this folder. Downloads its own copy of uv into this folder first, so
+# nothing is installed system-wide. The first run downloads uv, Python and the scanner's
+# libraries into this folder; the scan itself sends nothing. If the deep check is chosen, its
+# usage meters are kept in this folder too. Delete this folder to remove everything.
+
+# Started as `zsh shepherd-scan` or `sh shepherd-scan`: run again under bash.
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /bin/bash "$0" "$@"
+fi
+set -euo pipefail
+
+here="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
+uv_version="0.12.24"
+runtime="$here/.runtime"
+export UV_CACHE_DIR="$runtime/cache"
+export UV_PYTHON_INSTALL_DIR="$runtime/python"
+export SHEPHERD_RUNTIME="$runtime/deep"
+# Trust the certificates this Mac trusts, so networks that inspect web traffic work too.
+export UV_SYSTEM_CERTS=1 UV_NATIVE_TLS=1
+# Settings for other Python programs would break this one.
+unset PYTHONPATH PYTHONHOME
+# A certificate setting that names a file which no longer exists stops every download.
+for variable in SSL_CERT_FILE SSL_CERT_DIR CURL_CA_BUNDLE REQUESTS_CA_BUNDLE; do
+  if [ -n "${!variable:-}" ] && [ ! -e "${!variable}" ]; then
+    unset "$variable"
+  fi
+done
+
+wheels=("$here"/shepherd_scan-*.whl)
+if [ ! -f "${wheels[0]}" ]; then
+  echo "The scanner file (shepherd_scan-*.whl) is missing from $here." >&2
+  exit 1
+fi
+
+# uv's Python launcher needs `realpath`, which macOS has from version 13 (Ventura).
+if ! command -v realpath >/dev/null 2>&1; then
+  echo "This scanner needs macOS 13 (Ventura) or later." >&2
+  exit 1
+fi
+
+uv="$runtime/bin/uv"
+if [ ! -x "$uv" ]; then
+  echo "Downloading uv $uv_version into this folder (first run only)..."
+  if ! curl -LsSf "https://astral.sh/uv/$uv_version/install.sh" |
+    env UV_UNMANAGED_INSTALL="$runtime/bin" sh -s -- --quiet; then
+    if command -v uv >/dev/null 2>&1; then
+      uv="$(command -v uv)"
+      echo "Could not download uv; using the uv already on this computer." >&2
+    else
+      echo "Could not download uv (see the message above). Check the internet connection, any" \
+        "proxy or security software that inspects web traffic, and that this folder can be" \
+        "written to; then run this again." >&2
+      exit 1
+    fi
+  fi
+fi
+
+# Only uv's own Python: probing the system python3 on a new Mac opens an Apple install prompt.
+# --no-build: use only ready-made packages, so no compiler is needed (Intel Macs included).
+# --quiet: only errors from uv itself, not its "Installed 44 packages" line.
+exec "$uv" tool run --quiet --isolated --no-config --no-build --python 3.13 \
+  --python-preference only-managed --from "${wheels[0]}" shepherd-scan "$@"
